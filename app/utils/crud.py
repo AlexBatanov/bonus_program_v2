@@ -20,3 +20,10 @@ async def get_all_obj(async_session: AsyncSession, model, attr, param):
         db_obj = await session.execute(
             select(model).filter(getattr(model, attr) == param))
         return db_obj.scalars()
+
+
+async def update_obj(async_session: AsyncSession, obj):
+    async with async_session() as session:
+        session.add(obj)
+        await session.commit()
+        await session.refresh(obj)

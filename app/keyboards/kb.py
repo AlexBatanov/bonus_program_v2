@@ -26,7 +26,7 @@ def save_user():
     builder.button(
         text="Сохранить сотрудника", callback_data="save_user"
     )
-    builder.adjust(2)
+    builder.adjust(1)
     return builder.as_markup()
 
 def sale_buyer():
@@ -36,6 +36,17 @@ def sale_buyer():
     )
     builder.button(
         text="Обращение по гарантии", callback_data="warranty"
+    )
+    builder.adjust(1)
+    return builder.as_markup()
+
+def save_sale():
+    builder = InlineKeyboardBuilder()
+    builder.button(
+        text="Провести продажу", callback_data="save_saly"
+    )
+    builder.button(
+        text="Отменить", callback_data="cancel"
     )
     builder.adjust(2)
     return builder.as_markup()

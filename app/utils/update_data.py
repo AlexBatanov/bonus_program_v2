@@ -1,6 +1,8 @@
-
 from typing import Dict
-from db.models import Buyer
+
+from sqlalchemy.ext.asyncio import AsyncSession
+
+from db.models import BonusPoint, Buyer
 from utils.crud import get_obj
 
 
@@ -13,7 +15,6 @@ def update_data_user(data: Dict) -> Dict:
     del data['name']
     return data
 
-
 def update_data_cheque(data: Dict) -> Dict:
     """Обновляем данные для создания чека"""
     cheque_data = dict()
@@ -23,3 +24,12 @@ def update_data_cheque(data: Dict) -> Dict:
     cheque_data['employee'] = data.get('employee')
     cheque_data['buyer'] = data.get('buyer')
     return cheque_data
+
+async def update_buyer(async_session: AsyncSession, data: Dict) -> Buyer:
+    """Обновляем данные объекта покупатель перед сохраннением изменений"""
+    bonus = await get_obj(async_session, BonusPoint, 'name', 'bonus_pointer')
+    buyer = await get_obj(async_session, Buyer, 'number', data.get('number'))
+    amount = int(data.get('amount')) - int(data.get('bonus_points'))
+    buyer.bonus_points = buyer.bonus_points - int(data.get('bonus_points')) + amount * bonus.percent // 100
+    buyer.count_aplications += 1
+    return buyer

@@ -2,12 +2,13 @@ from aiogram import Router, F
 from aiogram.types import Message, CallbackQuery
 from aiogram.fsm.context import FSMContext
 
-from utils.update_data import update_data_cheque
+from keyboards import kb
+from utils.update_data import update_buyer, update_data_cheque
 from utils.validators import is_valid_data_cheque_buyer
 from utils.states import BuyerForm, ChequeForm
-from utils.crud import create_obj, get_obj
+from utils.crud import create_obj, get_obj, update_obj
 from db.async_engine import async_session
-from db.models import Buyer
+from db.models import Buyer, Cheque
 
 
 
@@ -64,16 +65,25 @@ async def chek_data(message: Message, state: FSMContext):
     if error_message:
         await message.answer(error_message)
         return
-    cheque_data = update_data_cheque(data)
-    print(cheque_data)
+
     await message.answer(
         f'Установленные пленки: {data.get("films")}\n'
         f'Сумма чека: {data.get("amount")}\n'
         f'Списано баллов: {data.get("bonus_points")}\n\n'
-        f'К оплате: {cheque_data.get("amount")}'
+        f'К оплате: {int(data.get("amount")) - int(data.get("bonus_points"))}',
+        reply_markup=kb.save_sale()
     )
-    # buyer = await get_obj(async_session, Buyer, 'number', data.get('number'))
-    # await message.answer(
-    #     f'Введи количество бонусов для списания, доступно: {buyer.bonus_points}'
-    # )
-    # await state.set_state(BuyerForm.bonus_points)
+
+
+@buyer_router.callback_query(F.data == "save_saly")
+async def save_saly(callback: CallbackQuery, state: FSMContext):
+    """Обновляем данные и сохраняем в бд"""
+    data = await state.get_data()
+    cheque = Cheque(**update_data_cheque(data))
+    buyer = await update_buyer(async_session, data)
+    await create_obj(async_session, cheque)
+    await update_obj(async_session, buyer)
+    await state.clear()
+    
+    await callback.message.answer('Продажа проведена')
+    await callback.answer()
