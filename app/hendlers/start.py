@@ -1,24 +1,33 @@
 from aiogram import F, Router
 from aiogram.types import Message, CallbackQuery
-from aiogram.filters import CommandStart, Command
+from aiogram.filters import CommandStart
 from aiogram.fsm.context import FSMContext
-from aiogram.enums import ParseMode, chat_type
+from aiogram.enums import ParseMode
 
 from keyboards import kb
-from db.models import Employee, Buyer
+from db.models import BonusPoint, Employee, Buyer
 from db.async_engine import async_session
-from utils.crud import get_obj
+from utils.crud import get_obj, create_obj
 from utils.states import BuyerForm
-
-# from keyboards.keyboards import (get_keyboard_find_buyer,
-#                                  get_keyboard_not_find_duyer, get_keybords_add_del_employee)
-# from db.engine_db import get_async_session
-# from utils.crud_operations import get_object
-# from db.models import Buyer, Employee
-# from db.states_group import BuyerForm
 
 
 start_router = Router()
+
+
+@start_router.startup()
+async def on_startup():
+    """
+    Проверяет наличие объекта бонус в бд,
+    если нет, то создает.
+    
+    используется при запуске бота
+    """
+    obj = await get_obj(async_session, BonusPoint, 'name', 'bonus_pointer')
+    if not obj:
+        obj = BonusPoint(name='bonus_pointer')
+        await create_obj(async_session, obj)
+        print("Бонусы добавлены")
+
 
 # @start_router.callback_query(F.data == "cancel")
 @start_router.message(CommandStart())
