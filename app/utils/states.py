@@ -20,5 +20,5 @@ class UserForm(StatesGroup):
     is_admin = State()
 
 class WarrantyForm(StatesGroup):
-    id = State()
-    cheques = State()
+    cheque = State()
+    films = State()

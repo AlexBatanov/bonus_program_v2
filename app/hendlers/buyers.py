@@ -7,7 +7,7 @@ from aiogram.fsm.context import FSMContext
 from keyboards import kb
 from utils.update_data import update_buyer, update_data_cheque
 from utils.validators import is_valid_data_cheque_buyer
-from utils.states import BuyerForm, ChequeForm
+from utils.states import BuyerForm, ChequeForm, WarrantyForm
 from utils.crud import create_obj, get_obj, get_obj_relation, update_obj
 from db.async_engine import async_session
 from db.models import Buyer, Cheque
@@ -117,5 +117,34 @@ async def start_warranty(callback: CallbackQuery, state: FSMContext):
 
 
 @buyer_router.callback_query(F.data.startswith('number'))
-async def start_warranty(callback: CallbackQuery, state: FSMContext):
-    await callback.message.answer(callback.data.split('_')[1])
+async def input_films_warranty(callback: CallbackQuery, state: FSMContext):
+    """Выбирается объект чека и запрашиваются типы пленок"""
+    index_cheque = int(callback.data.split('_')[1])
+    data = await state.get_data()
+    cheque = data.get('cheques')[index_cheque]
+    await state.update_data(cheque=cheque)
+    await state.update_data(films=cheque.films)
+    await callback.message.answer(
+        f'Установленные пленки: {cheque.films}\n'
+        'Нажми "пропустить" если тип пленки не изменился, иначе напиши новую(ые)',
+        reply_markup=kb.skip_films()
+    )
+    await state.set_state(WarrantyForm.films)
+
+
+@buyer_router.message(WarrantyForm.films)
+async def set_films_warranty(message: Message, state: FSMContext):
+    """Обновляем пленки в чеке и завершаем диалог с гарантией"""
+    data = await state.get_data()
+    cheque = data.get('cheque')
+    cheque.films = message.text
+    await update_obj(async_session, cheque)
+    await state.clear()
+    await message.answer('Данные обновлены и проведены')
+
+
+@buyer_router.callback_query(F.data == 'skip_films')
+async def cancel_warranty(callback: CallbackQuery, state: FSMContext):
+    """Чистим состояние и завершаем диалог с гарантией"""
+    await state.clear()
+    await callback.message.answer('Работа с гарантией завершена')

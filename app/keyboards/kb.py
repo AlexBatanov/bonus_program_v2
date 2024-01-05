@@ -55,7 +55,15 @@ def numder_cheques(count):
     builder = InlineKeyboardBuilder()
     for i in range(1, count+1):
         builder.button(
-            text=str(i), callback_data=f"number_{i}"
+            text=str(i), callback_data=f"number_{i-1}"
         )
     builder.adjust(4)
+    return builder.as_markup()
+
+def skip_films():
+    builder = InlineKeyboardBuilder()
+    builder.button(
+        text="Пропустить", callback_data="skip_films"
+    )
+    builder.adjust(1)
     return builder.as_markup()
