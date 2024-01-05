@@ -1,3 +1,5 @@
+from datetime import datetime, timedelta
+
 from aiogram import Router, F
 from aiogram.types import Message, CallbackQuery
 from aiogram.fsm.context import FSMContext
@@ -6,7 +8,7 @@ from keyboards import kb
 from utils.update_data import update_buyer, update_data_cheque
 from utils.validators import is_valid_data_cheque_buyer
 from utils.states import BuyerForm, ChequeForm
-from utils.crud import create_obj, get_obj, update_obj
+from utils.crud import create_obj, get_obj, get_obj_relation, update_obj
 from db.async_engine import async_session
 from db.models import Buyer, Cheque
 
@@ -87,3 +89,33 @@ async def save_saly(callback: CallbackQuery, state: FSMContext):
     
     await callback.message.answer('Продажа проведена')
     await callback.answer()
+
+
+@buyer_router.callback_query(F.data == "warranty")
+async def start_warranty(callback: CallbackQuery, state: FSMContext):
+    """Начало диалога обращения по гарантии"""
+    data = await state.get_data()
+    buyer = await get_obj_relation(
+        async_session, Buyer, 'number', data.get('number'), 'cheques'
+    )
+    min_date = datetime.now() - timedelta(days=60)
+    cheques = [cheque for cheque in buyer.cheques if cheque.date >= min_date]
+    await state.update_data(cheques=cheques)
+
+    message = (
+        'Здесь отображаются все чеки клиента за последние два месяца\n'
+        'Выбери номер нужного чека\n'
+    )
+    for indx, cheque in enumerate(cheques, start=1):
+        message += (
+            f'№: {indx}\n'
+            f'Дата покупки: {cheque.date}\n'
+            f'Установленные пленки: {cheque.films}\n'
+            f'Сумма чека: {cheque.amount}\n\n'
+        )
+    await callback.message.answer(message, reply_markup=kb.numder_cheques(len(cheques)))
+
+
+@buyer_router.callback_query(F.data.startswith('number'))
+async def start_warranty(callback: CallbackQuery, state: FSMContext):
+    await callback.message.answer(callback.data.split('_')[1])

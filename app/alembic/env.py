@@ -25,6 +25,7 @@ from db.models import Base
 from dotenv import load_dotenv
 
 target_metadata = Base.metadata
+print(target_metadata)
 load_dotenv()
 config.set_main_option("sqlalchemy.url", getenv("DB_URL"))
 # other values from the config, defined by the needs of env.py,

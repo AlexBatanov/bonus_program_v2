@@ -50,3 +50,12 @@ def save_sale():
     )
     builder.adjust(2)
     return builder.as_markup()
+
+def numder_cheques(count):
+    builder = InlineKeyboardBuilder()
+    for i in range(1, count+1):
+        builder.button(
+            text=str(i), callback_data=f"number_{i}"
+        )
+    builder.adjust(4)
+    return builder.as_markup()

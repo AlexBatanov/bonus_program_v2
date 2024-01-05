@@ -22,6 +22,7 @@ class Employee(Base):
     )
     is_admin: Mapped[bool] = mapped_column(default=False)
     is_banned: Mapped[bool] = mapped_column(default=False)
+    cheques: Mapped[List['Cheque']] = relationship()
 
 
 class Buyer(Base):
@@ -36,6 +37,7 @@ class Buyer(Base):
     )
     bonus_points: Mapped[int] = mapped_column(default=0)
     count_aplications: Mapped[int] = mapped_column(default=0)
+    cheques: Mapped[List['Cheque']] = relationship()
 
 
 class BonusPoint(Base):
