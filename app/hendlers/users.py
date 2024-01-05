@@ -6,7 +6,7 @@ from aiogram.fsm.context import FSMContext
 from db.models import Employee
 from utils.crud import create_obj
 from utils.update_data import update_data_user
-from utils.user_valid import is_valid_data_user
+from utils.validators import is_valid_data_user
 from keyboards import kb
 from utils.states import UserForm
 from db.async_engine import async_session

@@ -4,6 +4,7 @@ from aiogram.filters.state import StatesGroup, State
 class BuyerForm(StatesGroup):
     number = State()
     name = State()
+    bonus_points = State()
 #     films = State()
 #     last_cheque = State()
 #     employee = State()

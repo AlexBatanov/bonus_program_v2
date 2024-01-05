@@ -29,9 +29,8 @@ async def on_startup():
         print("Бонусы добавлены")
 
 
-# @start_router.callback_query(F.data == "cancel")
 @start_router.message(CommandStart())
-async def start(message: Message | CallbackQuery, state: FSMContext):
+async def start(message: Message, state: FSMContext):
     """Начало работы бота"""
 
     employee_id = message.from_user.id
@@ -56,7 +55,7 @@ async def start(message: Message | CallbackQuery, state: FSMContext):
         )
     await state.set_state(BuyerForm.number)
 
-@start_router.message(F.text.regexp(r"\d{11}"))
+# @start_router.message(F.text.regexp(r"\d{11}"))
 @start_router.message(BuyerForm.number, F.text.regexp(r"\d{11}"))
 async def check_buyer(message: Message, state: FSMContext):
     """
@@ -79,3 +78,8 @@ async def check_buyer(message: Message, state: FSMContext):
         await message.answer('Введи имя клиента')
         await state.set_state(BuyerForm.name)
 
+
+@start_router.callback_query(F.data == "cancel")
+async def cancel(callback: CallbackQuery, state: FSMContext):
+    await state.clear()
+    await callback.message.asnwer('Отменено. Для продолжения работы нажми /start')
