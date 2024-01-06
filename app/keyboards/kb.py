@@ -14,6 +14,7 @@ def is_admin():
     builder.adjust(2)
     return builder.as_markup()
 
+
 def add_user():
     builder = InlineKeyboardBuilder()
     builder.button(
@@ -21,6 +22,7 @@ def add_user():
     )
     builder.adjust(2)
     return builder.as_markup()
+
 
 def save_user():
     builder = InlineKeyboardBuilder()
@@ -30,7 +32,8 @@ def save_user():
     builder.adjust(1)
     return builder.as_markup()
 
-def sale_buyer():
+
+def sale_buyer(is_admin=False):
     builder = InlineKeyboardBuilder()
     builder.button(
         text="Провести продажу", callback_data="saly"
@@ -38,8 +41,25 @@ def sale_buyer():
     builder.button(
         text="Обращение по гарантии", callback_data="warranty"
     )
+    if is_admin:
+        builder.button(
+            text="Изменить данные клиента", callback_data="change_buyer"
+        )
     builder.adjust(1)
     return builder.as_markup()
+
+
+def change_buyer():
+    builder = InlineKeyboardBuilder()
+    builder.button(
+        text="Изменить количество баллов", callback_data="change_bonus"
+    )
+    builder.button(
+        text="Изменить номер", callback_data="change_number"
+    )
+    builder.adjust(1)
+    return builder.as_markup()
+
 
 def save_sale():
     builder = InlineKeyboardBuilder()
@@ -52,7 +72,9 @@ def save_sale():
     builder.adjust(2)
     return builder.as_markup()
 
+
 def numder_cheques(count):
+    """Создание кнопок для выбора чека"""
     builder = InlineKeyboardBuilder()
     for i in range(1, count+1):
         builder.button(
@@ -60,6 +82,7 @@ def numder_cheques(count):
         )
     builder.adjust(4)
     return builder.as_markup()
+
 
 def skip_films():
     builder = InlineKeyboardBuilder()
@@ -69,6 +92,7 @@ def skip_films():
     builder.adjust(1)
     return builder.as_markup()
 
+
 def block():
     builder = InlineKeyboardBuilder()
     builder.button(
@@ -77,6 +101,7 @@ def block():
     builder.adjust(1)
     return builder.as_markup()
 
+
 def unlock():
     builder = InlineKeyboardBuilder()
     builder.button(
@@ -84,6 +109,7 @@ def unlock():
     )
     builder.adjust(1)
     return builder.as_markup()
+
 
 def admin_keys():
     kb = [
@@ -106,6 +132,7 @@ def admin_keys():
         input_field_placeholder="Властвуй"
     )
     return keyboard
+
 
 def cancel():
     kb = [

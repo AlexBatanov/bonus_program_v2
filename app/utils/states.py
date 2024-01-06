@@ -25,3 +25,8 @@ class WarrantyForm(StatesGroup):
 
 class BannedForm(StatesGroup):
     tg_id = State()
+
+
+class ChangeForm(StatesGroup):
+    number = State()
+    bonus = State()

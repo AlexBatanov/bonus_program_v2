@@ -6,8 +6,8 @@ from aiogram.fsm.context import FSMContext
 
 from keyboards import kb
 from utils.update_data import update_buyer, update_data_cheque
-from utils.validators import is_valid_data_cheque_buyer
-from utils.states import BuyerForm, ChequeForm, WarrantyForm
+from utils.validators import is_valid_data_cheque_buyer, is_valid_number
+from utils.states import BuyerForm, ChangeForm, ChequeForm, WarrantyForm
 from utils.crud import create_obj, get_obj, get_obj_relation, update_obj
 from db.async_engine import async_session
 from db.models import Buyer, Cheque
@@ -16,20 +16,22 @@ from db.models import Buyer, Cheque
 
 buyer_router = Router()
 
+# Регистрация клиента
 @buyer_router.message(BuyerForm.name)
 async def buyer_name(message: Message, state: FSMContext):
     """Устанавлием имя и записываем в бд клиента"""
     await state.update_data(name=message.text)
     data = await state.get_data()
-    obj = Buyer(**data)
+    obj = Buyer(number=data.get('number'), name=data.get('name'))
     await create_obj(async_session, obj)
     await message.answer(
         'Клиент создан \U0001F919\n'
-        'Для продолжения работы нажми \start или введи номер телефона\U0001F446'
+        'Для продолжения работы нажми /start или введи номер телефона\U0001F446'
     )
     await state.clear()
 
 
+# Блок проведения продажи
 @buyer_router.callback_query(F.data == "saly")
 async def input_films(callback: CallbackQuery, state: FSMContext):
     """Устанавливаем состояние пленок для чека"""
@@ -97,6 +99,7 @@ async def save_saly(callback: CallbackQuery, state: FSMContext):
     await callback.answer()
 
 
+# Блок проведения гарантии
 @buyer_router.callback_query(F.data == "warranty")
 async def start_warranty(callback: CallbackQuery, state: FSMContext):
     """Начало диалога обращения по гарантии"""
@@ -154,3 +157,62 @@ async def cancel_warranty(callback: CallbackQuery, state: FSMContext):
     """Чистим состояние и завершаем диалог с гарантией"""
     await state.clear()
     await callback.message.answer('Работа с гарантией завершена')
+
+
+# Блок изменения данных клиента
+@buyer_router.callback_query(F.data == 'change_buyer')
+async def satrt_change_data_buyer(callback: CallbackQuery, state: FSMContext):
+    """Чистим состояние и завершаем диалог с гарантией"""
+    await callback.message.answer(
+        'Что меняем?',
+        reply_markup=kb.change_buyer()
+    )
+
+
+@buyer_router.callback_query(F.data == 'change_number')
+async def request_new_number(callback: CallbackQuery, state: FSMContext):
+    """Запрашиваем новый номер"""
+    await state.set_satate(ChangeForm.number)
+    await callback.message.answer('Напиши новый номер')
+
+
+@buyer_router.message(ChangeForm.number)
+async def set_number_buyer(message: Message, state: FSMContext):
+    """Чекаем номер и сохранянем изменения если с номером ок"""
+
+    err_message = await is_valid_number(message.text)
+
+    if err_message:
+        await message.answer(err_message)
+        return
+
+    data = await state.get_data()
+    buyer = data.get('buyer')
+    buyer.number = message.text
+    await update_obj(async_session, buyer)
+    await state.clear()
+    await message.answer('Номер изменен')
+
+
+@buyer_router.callback_query(F.data == 'change_bonus')
+async def request_new_bonus(callback: CallbackQuery, state: FSMContext):
+    """Запрашиваем новое количество бонусов"""
+    await state.set_state(ChangeForm.bonus)
+    await callback.message.answer('Сколько бонусов делаем, можно от 0 до ...')
+
+
+@buyer_router.message(ChangeForm.bonus)
+async def set_number_buyer(message: Message, state: FSMContext):
+    """Проверяем на валидность баллы и сохранянем изменения если ок"""
+
+    if not message.text.isdigit():
+        await message.answer('Пишем только цифры')
+        return
+
+    data = await state.get_data()
+    buyer = data.get('buyer')
+    print(f'================================\n {type(buyer.bonus_points)}\n\n')
+    buyer.bonus_points = message.text
+    await update_obj(async_session, buyer)
+    await state.clear()
+    await message.answer('Баллы обновлены')

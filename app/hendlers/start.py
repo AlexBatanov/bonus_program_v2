@@ -15,6 +15,7 @@ from utils.states import BuyerForm
 start_router = Router()
 start_router.message.middleware(AccesBot())
 
+
 @start_router.startup()
 async def on_startup():
     """
@@ -33,7 +34,7 @@ async def on_startup():
 @start_router.message(CommandStart())
 async def start(message: Message, state: FSMContext, is_admin: bool):
     """Начало работы бота"""
-
+    await state.update_data(is_admin=is_admin)
     if is_admin:
         await message.answer(
             "Введи номер клиента в формате: 89271112233",
@@ -57,14 +58,16 @@ async def check_buyer(message: Message, state: FSMContext):
     иначе открываем диалог работы с клиентом
     """
     await state.update_data(number=message.text)
+    data = await state.get_data()
 
-    obj = await get_obj(async_session, Buyer, 'number', message.text)
-    if obj:
+    buyer = await get_obj(async_session, Buyer, 'number', message.text)
+    if buyer:
+        await state.update_data(buyer=buyer)
         await message.answer(
-            f"Имя: {obj.name}\n"
-            f"Доступно бонусов: {obj.bonus_points}\n"
-            f"Количество установок: {obj.count_aplications}\n",
-            reply_markup=kb.sale_buyer()
+            f"Имя: {buyer.name}\n"
+            f"Доступно бонусов: {buyer.bonus_points}\n"
+            f"Количество установок: {buyer.count_aplications}\n",
+            reply_markup=kb.sale_buyer(data.get('is_admin'))
         )
     else:
         await state.update_data(number=int(message.text))

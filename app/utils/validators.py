@@ -30,3 +30,13 @@ async def is_valid_data_cheque_buyer(data: Dict) -> str | None:
 def is_valid_tg_id(id: str) -> str | bool:
     if not id.isdigit():
         return 'Telegram ID должен содержать только числа'
+
+
+async def is_valid_number(number: str) -> str | bool:
+    if not number.isdigit():
+        return 'Номер должен содержать только цифры'
+    if len(number) != 11:
+        return 'Неверно набран номер, должно быть 11 цифр'
+    buyer = await get_obj(async_session, Buyer, 'number', number)
+    if buyer:
+        return 'Данный номер уже зарегистрирован'

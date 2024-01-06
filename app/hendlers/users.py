@@ -15,6 +15,7 @@ from db.async_engine import async_session
 user_router = Router()
 
 
+# Начало блока регистрации сотрудника
 @user_router.message(F.text.lower() == "добавить сотрудника")
 async def input_employee_name(message: types.Message, state: FSMContext):
     """Объявляем состояние и запрашиваем имя и фамилию продавца"""
@@ -85,6 +86,7 @@ async def save_employee(callback: types.CallbackQuery, state: FSMContext):
     )
 
 
+# Начало блока блокировки\разблокировки сотрудника
 @user_router.message(F.text.lower() == 'заблокировать/разблокировать сотрудника')
 async def start_banned_user(message: Message, state: FSMContext):
     """Запрашиваем телеграмм_id сотрудника для блокировки/разблокировки"""
