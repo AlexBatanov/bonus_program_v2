@@ -1,4 +1,5 @@
 from aiogram.utils.keyboard import InlineKeyboardBuilder
+from aiogram import types
 
 
 def is_admin():
@@ -67,3 +68,54 @@ def skip_films():
     )
     builder.adjust(1)
     return builder.as_markup()
+
+def block():
+    builder = InlineKeyboardBuilder()
+    builder.button(
+        text="Заблокировать", callback_data="block"
+    )
+    builder.adjust(1)
+    return builder.as_markup()
+
+def unlock():
+    builder = InlineKeyboardBuilder()
+    builder.button(
+        text="Разблокировать", callback_data="unlock"
+    )
+    builder.adjust(1)
+    return builder.as_markup()
+
+def admin_keys():
+    kb = [
+        [
+            types.KeyboardButton(text="Добавить сотрудника"),
+            types.KeyboardButton(text="Заблокировать/разблокировать сотрудника"),
+        ],
+        [
+            types.KeyboardButton(text="Изменить данные клиента"),
+            types.KeyboardButton(text="Статистика"),
+        ],
+        [
+            types.KeyboardButton(text="Отмена"),
+        ],
+
+    ]
+    keyboard = types.ReplyKeyboardMarkup(
+        keyboard=kb,
+        resize_keyboard=True,
+        input_field_placeholder="Властвуй"
+    )
+    return keyboard
+
+def cancel():
+    kb = [
+        [
+            types.KeyboardButton(text="Отмена"),
+        ],
+    ]
+    keyboard = types.ReplyKeyboardMarkup(
+        keyboard=kb,
+        resize_keyboard=True,
+        input_field_placeholder="Галя у нас отмена"
+    )
+    return keyboard

@@ -3,9 +3,11 @@ from aiogram import BaseMiddleware
 from aiogram.types import TelegramObject
 from aiogram.enums import ParseMode
 
+from keyboards import kb
 from utils.crud import get_obj
 from db.async_engine import async_session
 from db.models import Employee
+
 
 class AccesBot(BaseMiddleware):
     """Проверяем наличие сотрудника и имеет ли он доступ"""
@@ -27,6 +29,5 @@ class AccesBot(BaseMiddleware):
                 parse_mode=ParseMode.HTML
             )
             return
-
-        data['is_admin'] = False #employee.is_admin     
+        data['is_admin'] = True #employee.is_admin     
         return await handler(event, data)

@@ -22,3 +22,6 @@ class UserForm(StatesGroup):
 class WarrantyForm(StatesGroup):
     cheque = State()
     films = State()
+
+class BannedForm(StatesGroup):
+    tg_id = State()

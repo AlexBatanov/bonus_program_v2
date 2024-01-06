@@ -4,21 +4,21 @@ from aiogram import Router, types
 from aiogram.fsm.context import FSMContext
 
 from db.models import Employee
-from utils.crud import create_obj
+from utils.crud import create_obj, get_obj, update_obj
 from utils.update_data import update_data_user
-from utils.validators import is_valid_data_user
+from utils.validators import is_valid_data_user, is_valid_tg_id
 from keyboards import kb
-from utils.states import UserForm
+from utils.states import BannedForm, UserForm
 from db.async_engine import async_session
 
 
 user_router = Router()
 
 
-@user_router.callback_query(F.data == "add_user")
-async def input_employee_name(callback: types.CallbackQuery, state: FSMContext):
+@user_router.message(F.text.lower() == "добавить сотрудника")
+async def input_employee_name(message: types.Message, state: FSMContext):
     """Объявляем состояние и запрашиваем имя и фамилию продавца"""
-    await callback.message.answer(
+    await message.answer(
         "Введи имя и фамилию продовца через пробел\n"
         "Пример: Иван Иванов",)
     await state.set_state(UserForm.name)
@@ -80,6 +80,69 @@ async def save_employee(callback: types.CallbackQuery, state: FSMContext):
     await create_obj(async_session, user)
     await state.clear()
     await callback.answer()
-    await callback.message.answer("Сотрудник добавлен 👍",
-                                #   reply_markup=repeat()
-                                  )
+    await callback.message.answer(
+        "Сотрудник добавлен 👍"
+    )
+
+
+@user_router.message(F.text.lower() == 'заблокировать/разблокировать сотрудника')
+async def start_banned_user(message: Message, state: FSMContext):
+    """Запрашиваем телеграмм_id сотрудника для блокировки/разблокировки"""
+    await state.set_state(BannedForm.tg_id)
+    await message.answer(
+        "Введи телеграм_id сотрудника, только цифры"
+    )
+
+
+@user_router.message(BannedForm.tg_id)
+async def banned_user(message: Message, state: FSMContext):
+    """Валедируем tg_id, чекаем сотрудника"""
+    err_message = is_valid_tg_id(message.text)
+    if err_message:
+        await message.answer(err_message)
+        return
+    employee = await get_obj(async_session, Employee, 'telegram_id', message.text)
+    if not employee:
+        await message.answer('Сотрудника с таким id нет')
+        return
+    await state.update_data(employee=employee)
+    if employee.is_banned:
+        await message.answer(
+            f'Сотрудник: {employee.first_name} {employee.last_name}',
+            reply_markup=kb.unlock()
+        )
+    else:
+        await message.answer(
+            f'Сотрудник: {employee.first_name} {employee.last_name}',
+            reply_markup=kb.block()
+        )
+
+
+@user_router.callback_query(F.data == "block")
+async def save_block_user(callback: types.CallbackQuery, state: FSMContext):
+    """Баннем сотрудника и сохраняем"""
+    await block_unlock(callback, state, True)
+
+
+@user_router.callback_query(F.data == "unlock")
+async def save_block_user(callback: types.CallbackQuery, state: FSMContext):
+    """Разбаниваем сотрудника и сохраняем"""
+    await block_unlock(callback, state, False)
+
+
+async def block_unlock(callback: types.CallbackQuery, state: FSMContext, is_banned: bool):
+    """Блокировка/разблокировка сотрудника"""
+    data = await state.get_data()
+    employee = data.get('employee')
+    employee.is_banned = is_banned
+    await update_obj(async_session, employee)
+    await state.clear()
+    await callback.answer()
+    if is_banned:
+        await callback.message.answer(
+            "Сотрудник заблокирован",
+        )
+    else:
+        await callback.message.answer(
+            "Сотрудник разаблокирован",
+        )

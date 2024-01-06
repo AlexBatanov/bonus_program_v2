@@ -33,36 +33,22 @@ async def on_startup():
 @start_router.message(CommandStart())
 async def start(message: Message, state: FSMContext, is_admin: bool):
     """Начало работы бота"""
-    # print(is_admin)
-    # employee_id = message.from_user.id
-    # obj = await get_obj(async_session, Employee, 'telegram_id', employee_id)
-    # answer_message = ["Введи номер клиента в формате: 89271112233",]
-    await message.answer(
-        "Введи номер клиента в формате: 89271112233",
-        reply_markup=(kb.add_user() if is_admin else None)
-    )
-    
-    # if True:
-    # # if obj and obj.is_admin:
-    #     # 
-    #     await message.answer(
-    #         "Введи номер клиента в формате: 89271112233",
-    #         reply_markup=kb.add_user()
-    #     )
-    # elif obj and not obj.is_banned:
-    #     # await state.set_state(BuyerForm.number)
-    #     await message.answer(
-    #         "Введи номер клиента в формате: 89271112233",
-    #     )
-    # else:
-    #     await message.answer(
-    #         "Для работы с ботом отправь администратору\n"
-    #         f"свой id <code><b>{employee_id}</b></code>",
-    #         parse_mode=ParseMode.HTML
-    #     )
+
+    if is_admin:
+        await message.answer(
+            "Введи номер клиента в формате: 89271112233",
+            reply_markup=kb.admin_keys()
+        )
+    else:
+        await message.answer(
+            "Введи номер клиента в формате: 89271112233",
+            # reply_markup=(kb.add_user() if is_admin else None)
+        )
+
     await state.set_state(BuyerForm.number)
 
-# @start_router.message(F.text.regexp(r"\d{11}"))
+
+@start_router.message(F.text.regexp(r"\d{11}"))
 @start_router.message(BuyerForm.number, F.text.regexp(r"\d{11}"))
 async def check_buyer(message: Message, state: FSMContext):
     """
@@ -86,7 +72,9 @@ async def check_buyer(message: Message, state: FSMContext):
         await state.set_state(BuyerForm.name)
 
 
-@start_router.callback_query(F.data == "cancel")
-async def cancel(callback: CallbackQuery, state: FSMContext):
+@start_router.message(F.text.lower() == "отмена")
+async def cancel(message: Message, state: FSMContext):
     await state.clear()
-    await callback.message.asnwer('Отменено. Для продолжения работы нажми /start')
+    await message.answer(
+        'Отменено. Для продолжения работы нажми /start или введи номер телефона\U0001F446'
+    )

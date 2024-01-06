@@ -25,3 +25,8 @@ async def is_valid_data_cheque_buyer(data: Dict) -> str | None:
         return 'Введеные бонусы не могут быть больше суммы чека'
     if int(bonus) > buyer.bonus_points:
         return 'Введеные бонусы привышают баллы клиента'
+
+
+def is_valid_tg_id(id: str) -> str | bool:
+    if not id.isdigit():
+        return 'Telegram ID должен содержать только числа'

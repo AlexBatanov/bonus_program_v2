@@ -23,7 +23,10 @@ async def buyer_name(message: Message, state: FSMContext):
     data = await state.get_data()
     obj = Buyer(**data)
     await create_obj(async_session, obj)
-    await message.answer('Клиент создан')
+    await message.answer(
+        'Клиент создан \U0001F919\n'
+        'Для продолжения работы нажми \start или введи номер телефона\U0001F446'
+    )
     await state.clear()
 
 
@@ -87,7 +90,10 @@ async def save_saly(callback: CallbackQuery, state: FSMContext):
     await update_obj(async_session, buyer)
     await state.clear()
     
-    await callback.message.answer('Продажа проведена')
+    await callback.message.answer(
+        'Продажа проведена \U0001F919\n'
+        'Для продолжения работы нажми \start или введи номер телефона\U0001F446'
+    )
     await callback.answer()
 
 
