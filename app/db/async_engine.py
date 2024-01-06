@@ -1,5 +1,4 @@
 from os import getenv
-import asyncio
 
 from dotenv import load_dotenv
 from sqlalchemy.orm import sessionmaker

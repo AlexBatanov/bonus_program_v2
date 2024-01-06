@@ -4,6 +4,7 @@ from aiogram.filters import CommandStart
 from aiogram.fsm.context import FSMContext
 from aiogram.enums import ParseMode
 
+from middlewares.user_acces import AccesBot
 from keyboards import kb
 from db.models import BonusPoint, Employee, Buyer
 from db.async_engine import async_session
@@ -12,7 +13,7 @@ from utils.states import BuyerForm
 
 
 start_router = Router()
-
+start_router.message.middleware(AccesBot())
 
 @start_router.startup()
 async def on_startup():
@@ -30,29 +31,35 @@ async def on_startup():
 
 
 @start_router.message(CommandStart())
-async def start(message: Message, state: FSMContext):
+async def start(message: Message, state: FSMContext, is_admin: bool):
     """Начало работы бота"""
-
-    employee_id = message.from_user.id
-    obj = await get_obj(async_session, Employee, 'telegram_id', employee_id)
-    if True:
-    # if obj and obj.is_admin:
-        # 
-        await message.answer(
-            "Введи номер клиента в формате: 89271112233",
-            reply_markup=kb.add_user()
-        )
-    elif obj and not obj.is_banned:
-        # await state.set_state(BuyerForm.number)
-        await message.answer(
-            "Введи номер клиента в формате: 89271112233",
-        )
-    else:
-        await message.answer(
-            "Для работы с ботом отправь администратору\n"
-            f"свой id <code><b>{employee_id}</b></code>",
-            parse_mode=ParseMode.HTML
-        )
+    # print(is_admin)
+    # employee_id = message.from_user.id
+    # obj = await get_obj(async_session, Employee, 'telegram_id', employee_id)
+    # answer_message = ["Введи номер клиента в формате: 89271112233",]
+    await message.answer(
+        "Введи номер клиента в формате: 89271112233",
+        reply_markup=(kb.add_user() if is_admin else None)
+    )
+    
+    # if True:
+    # # if obj and obj.is_admin:
+    #     # 
+    #     await message.answer(
+    #         "Введи номер клиента в формате: 89271112233",
+    #         reply_markup=kb.add_user()
+    #     )
+    # elif obj and not obj.is_banned:
+    #     # await state.set_state(BuyerForm.number)
+    #     await message.answer(
+    #         "Введи номер клиента в формате: 89271112233",
+    #     )
+    # else:
+    #     await message.answer(
+    #         "Для работы с ботом отправь администратору\n"
+    #         f"свой id <code><b>{employee_id}</b></code>",
+    #         parse_mode=ParseMode.HTML
+    #     )
     await state.set_state(BuyerForm.number)
 
 # @start_router.message(F.text.regexp(r"\d{11}"))
