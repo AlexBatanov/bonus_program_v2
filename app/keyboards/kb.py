@@ -115,7 +115,7 @@ def admin_keys():
     kb = [
         [
             types.KeyboardButton(text="Добавить сотрудника"),
-            types.KeyboardButton(text="Заблокировать/разблокировать сотрудника"),
+            types.KeyboardButton(text="Редактировать сотрудника"),
         ],
         [
             types.KeyboardButton(text="Статистика"),
@@ -146,3 +146,35 @@ def cancel():
         input_field_placeholder="Галя у нас отмена"
     )
     return keyboard
+
+
+def mode_selection():
+    builder = InlineKeyboardBuilder()
+    builder.button(
+        text="Блокировка/разблокировка", callback_data="unblock"
+    )
+    builder.button(
+        text="В админы/из админов", callback_data="perk"
+    )
+    builder.adjust(1)
+    return builder.as_markup()
+
+
+def set_admin():
+    builder = InlineKeyboardBuilder()
+
+    builder.button(
+        text="В админы", callback_data="set_admin"
+    )
+    builder.adjust(1)
+    return builder.as_markup()
+
+
+def set_not_admin():
+    builder = InlineKeyboardBuilder()
+
+    builder.button(
+        text="Из админов", callback_data="set_not_admin"
+    )
+    builder.adjust(1)
+    return builder.as_markup()

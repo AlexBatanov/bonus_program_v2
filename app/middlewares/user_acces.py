@@ -31,3 +31,21 @@ class AccesBot(BaseMiddleware):
             return
         data['is_admin'] = True #employee.is_admin     
         return await handler(event, data)
+
+
+class CheckAdmin(BaseMiddleware):
+    """Проверяем наличие сотрудника и имеет ли он статус админа"""
+    async def __call__(
+            self,
+            handler: Callable[[TelegramObject, Dict[str, Any]], Awaitable[Any]],
+            event: TelegramObject,
+            data: Dict[str, Any],
+    ) -> Any:
+
+        user_id = data.get('event_from_user').id
+        employee = await get_obj(async_session, Employee, 'telegram_id', user_id)
+        if True:
+        # if employee and employee.is_admin:   
+            return await handler(event, data)
+        await event.answer('Нет доступа!\n')
+        return

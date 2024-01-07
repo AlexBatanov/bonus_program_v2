@@ -23,7 +23,7 @@ class WarrantyForm(StatesGroup):
     cheque = State()
     films = State()
 
-class BannedForm(StatesGroup):
+class ChangeUserForm(StatesGroup):
     tg_id = State()
 
 
