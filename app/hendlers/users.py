@@ -3,6 +3,7 @@ from aiogram.types import Message
 from aiogram import Router, types
 from aiogram.fsm.context import FSMContext
 
+from middlewares.user_acces import AccesBot
 from db.models import Employee
 from utils.crud import create_obj, get_obj, update_obj
 from utils.update_data import update_data_user
@@ -13,6 +14,7 @@ from db.async_engine import async_session
 
 
 user_router = Router()
+user_router.message.middleware(AccesBot())
 
 
 # Начало блока регистрации сотрудника

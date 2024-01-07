@@ -90,11 +90,11 @@ async def save_saly(callback: CallbackQuery, state: FSMContext):
     buyer = await update_buyer(async_session, data)
     await create_obj(async_session, cheque)
     await update_obj(async_session, buyer)
-    await state.clear()
+    # await state.clear()
     
     await callback.message.answer(
         'Продажа проведена \U0001F919\n'
-        'Для продолжения работы нажми \start или введи номер телефона\U0001F446'
+        'Для продолжения работы нажми /start или введи номер телефона\U0001F446'
     )
     await callback.answer()
 
@@ -113,7 +113,7 @@ async def start_warranty(callback: CallbackQuery, state: FSMContext):
 
     message = (
         'Здесь отображаются все чеки клиента за последние два месяца\n'
-        'Выбери номер нужного чека\n'
+        'Выбери номер нужного чека\n\n'
     )
     for indx, cheque in enumerate(cheques, start=1):
         message += (
@@ -123,6 +123,7 @@ async def start_warranty(callback: CallbackQuery, state: FSMContext):
             f'Сумма чека: {cheque.amount}\n\n'
         )
     await callback.message.answer(message, reply_markup=kb.numder_cheques(len(cheques)))
+    await callback.answer()
 
 
 @buyer_router.callback_query(F.data.startswith('number'))
@@ -139,6 +140,7 @@ async def input_films_warranty(callback: CallbackQuery, state: FSMContext):
         reply_markup=kb.skip_films()
     )
     await state.set_state(WarrantyForm.films)
+    await callback.answer()
 
 
 @buyer_router.message(WarrantyForm.films)
@@ -148,15 +150,16 @@ async def set_films_warranty(message: Message, state: FSMContext):
     cheque = data.get('cheque')
     cheque.films = message.text
     await update_obj(async_session, cheque)
-    await state.clear()
+    # await state.clear()
     await message.answer('Данные обновлены и проведены')
 
 
 @buyer_router.callback_query(F.data == 'skip_films')
 async def cancel_warranty(callback: CallbackQuery, state: FSMContext):
     """Чистим состояние и завершаем диалог с гарантией"""
-    await state.clear()
+    # await state.clear()
     await callback.message.answer('Работа с гарантией завершена')
+    await callback.answer()
 
 
 # Блок изменения данных клиента
@@ -167,6 +170,7 @@ async def satrt_change_data_buyer(callback: CallbackQuery, state: FSMContext):
         'Что меняем?',
         reply_markup=kb.change_buyer()
     )
+    await callback.answer()
 
 
 @buyer_router.callback_query(F.data == 'change_number')
@@ -174,6 +178,7 @@ async def request_new_number(callback: CallbackQuery, state: FSMContext):
     """Запрашиваем новый номер"""
     await state.set_satate(ChangeForm.number)
     await callback.message.answer('Напиши новый номер')
+    await callback.answer()
 
 
 @buyer_router.message(ChangeForm.number)
@@ -190,7 +195,7 @@ async def set_number_buyer(message: Message, state: FSMContext):
     buyer = data.get('buyer')
     buyer.number = message.text
     await update_obj(async_session, buyer)
-    await state.clear()
+    # await state.clear()
     await message.answer('Номер изменен')
 
 
@@ -199,6 +204,7 @@ async def request_new_bonus(callback: CallbackQuery, state: FSMContext):
     """Запрашиваем новое количество бонусов"""
     await state.set_state(ChangeForm.bonus)
     await callback.message.answer('Сколько бонусов делаем, можно от 0 до ...')
+    await callback.answer()
 
 
 @buyer_router.message(ChangeForm.bonus)
@@ -211,8 +217,7 @@ async def set_number_buyer(message: Message, state: FSMContext):
 
     data = await state.get_data()
     buyer = data.get('buyer')
-    print(f'================================\n {type(buyer.bonus_points)}\n\n')
     buyer.bonus_points = message.text
     await update_obj(async_session, buyer)
-    await state.clear()
+    # await state.clear()
     await message.answer('Баллы обновлены')

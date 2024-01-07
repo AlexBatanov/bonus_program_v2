@@ -11,6 +11,7 @@ from aiogram.fsm.storage.memory import MemoryStorage
 from hendlers.start import start_router
 from hendlers.users import user_router
 from hendlers.buyers import buyer_router
+from hendlers.bonus_points import bonus_router
 
 load_dotenv()
 
@@ -29,6 +30,7 @@ async def main() -> None:
     dp.include_router(start_router)
     dp.include_router(user_router)
     dp.include_router(buyer_router)
+    dp.include_router(bonus_router)
     await dp.start_polling(bot)
 
 

@@ -30,3 +30,7 @@ class BannedForm(StatesGroup):
 class ChangeForm(StatesGroup):
     number = State()
     bonus = State()
+
+
+class BonusForm(StatesGroup):
+    percent = State()

@@ -51,12 +51,13 @@ async def start(message: Message, state: FSMContext, is_admin: bool):
 
 @start_router.message(F.text.regexp(r"\d{11}"))
 @start_router.message(BuyerForm.number, F.text.regexp(r"\d{11}"))
-async def check_buyer(message: Message, state: FSMContext):
+async def check_buyer(message: Message, state: FSMContext, is_admin: bool):
     """
     Проверяем существование покупателя
     Если нет, то переходим к диалогу создания
     иначе открываем диалог работы с клиентом
     """
+    await state.update_data(is_admin=is_admin)
     await state.update_data(number=message.text)
     data = await state.get_data()
 

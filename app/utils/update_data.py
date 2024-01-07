@@ -29,7 +29,8 @@ async def update_buyer(async_session: AsyncSession, data: Dict) -> Buyer:
     """Обновляем данные объекта покупатель перед сохраннением изменений"""
     bonus = await get_obj(async_session, BonusPoint, 'name', 'bonus_pointer')
     buyer = await get_obj(async_session, Buyer, 'number', data.get('number'))
-    amount = int(data.get('amount')) - int(data.get('bonus_points'))
+    print(data)
+    amount = int(data.get('amount'))
     buyer.bonus_points = buyer.bonus_points - int(data.get('bonus_points')) + amount * bonus.percent // 100
     buyer.count_aplications += 1
     return buyer

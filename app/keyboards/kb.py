@@ -118,8 +118,8 @@ def admin_keys():
             types.KeyboardButton(text="Заблокировать/разблокировать сотрудника"),
         ],
         [
-            types.KeyboardButton(text="Изменить данные клиента"),
             types.KeyboardButton(text="Статистика"),
+            types.KeyboardButton(text="Изменить процент начисления"),
         ],
         [
             types.KeyboardButton(text="Отмена"),
