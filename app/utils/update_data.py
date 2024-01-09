@@ -9,11 +9,12 @@ from utils.crud import get_obj
 def update_data_user(data: Dict) -> Dict:
     """Обновляем данные для создания юзера"""
     first_name, last_name = data.get('name').split()
-    data['first_name'] = first_name
-    data['last_name'] = last_name
-    data['telegram_id'] = int(data.get('telegram_id'))
-    del data['name']
-    return data
+    result = dict()
+    result['first_name'] = first_name
+    result['last_name'] = last_name
+    result['telegram_id'] = int(data.get('telegram_id'))
+    result['is_admin'] = data.get('is_admin')
+    return result
 
 def update_data_cheque(data: Dict) -> Dict:
     """Обновляем данные для создания чека"""

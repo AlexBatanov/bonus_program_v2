@@ -115,7 +115,7 @@ def admin_keys():
             types.KeyboardButton(text="Редактировать сотрудника"),
         ],
         [
-            types.KeyboardButton(text="Статистика"),
+            types.KeyboardButton(text="Отчеты"),
             types.KeyboardButton(text="Изменить процент начисления"),
         ],
         [
@@ -172,6 +172,22 @@ def set_not_admin():
 
     builder.button(
         text="Из админов", callback_data="set_not_admin"
+    )
+    builder.adjust(1)
+    return builder.as_markup()
+
+
+def list_reports():
+    builder = InlineKeyboardBuilder()
+
+    builder.button(
+        text="Список сотрудников", callback_data="list_employees"
+    )
+    builder.button(
+        text="Список клиентов", callback_data="list_buyers"
+    )
+    builder.button(
+        text="Список чеков", callback_data="list_cheques"
     )
     builder.adjust(1)
     return builder.as_markup()

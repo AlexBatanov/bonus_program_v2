@@ -38,3 +38,11 @@ async def get_obj_relation(async_session: AsyncSession, model, attr, param, attr
             )
         )
         return db_obj.scalar()
+
+
+async def get_all_obj(async_session: AsyncSession, model):
+    async with async_session() as session:
+        db_objects = await session.execute(
+            select(model)
+        )
+        return db_objects.scalars().all()

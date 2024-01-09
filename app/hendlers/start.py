@@ -49,7 +49,7 @@ async def start(message: Message, state: FSMContext, is_admin: bool):
     await state.set_state(BuyerForm.number)
 
 
-@start_router.message(F.text.regexp(r"\d{11}"))
+# @start_router.message(F.text.regexp(r"\d{11}"))
 @start_router.message(BuyerForm.number, F.text.regexp(r"\d{11}"))
 async def check_buyer(message: Message, state: FSMContext, is_admin: bool):
     """

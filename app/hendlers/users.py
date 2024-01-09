@@ -81,7 +81,6 @@ async def save_employee(callback: types.CallbackQuery, state: FSMContext):
     data = update_data_user(await state.get_data())
     user = Employee(**data)
     await create_obj(async_session, user)
-    await state.clear()
     await callback.answer()
     await callback.message.answer(
         "Сотрудник добавлен 👍"
