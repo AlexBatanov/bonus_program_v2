@@ -2,7 +2,7 @@ from aiogram import F, Router
 from aiogram.types import Message
 from aiogram.fsm.context import FSMContext
 
-from middlewares.user_acces import AccesBot
+from middlewares.user_acces import CheckAdmin
 from db.models import BonusPoint
 from db.async_engine import async_session
 from utils.crud import get_obj, update_obj
@@ -10,7 +10,7 @@ from utils.states import BonusForm
 
 
 bonus_router = Router()
-bonus_router.message.middleware(AccesBot())
+bonus_router.message.middleware(CheckAdmin())
 
 
 @bonus_router.message(F.text.lower() == 'изменить процент начисления')

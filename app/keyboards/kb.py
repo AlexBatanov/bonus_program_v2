@@ -66,9 +66,6 @@ def save_sale():
     builder.button(
         text="Провести продажу", callback_data="save_saly"
     )
-    builder.button(
-        text="Отменить", callback_data="cancel"
-    )
     builder.adjust(2)
     return builder.as_markup()
 

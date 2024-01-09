@@ -43,7 +43,7 @@ async def start(message: Message, state: FSMContext, is_admin: bool):
     else:
         await message.answer(
             "Введи номер клиента в формате: 89271112233",
-            # reply_markup=(kb.add_user() if is_admin else None)
+            reply_markup=kb.cancel()
         )
 
     await state.set_state(BuyerForm.number)

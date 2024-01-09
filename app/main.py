@@ -28,9 +28,9 @@ bonus = BonusPoint(name='ss')
 async def main() -> None:
     bot = Bot(TOKEN, parse_mode=ParseMode.HTML)
     dp.include_router(start_router)
+    dp.include_router(bonus_router)
     dp.include_router(user_router)
     dp.include_router(buyer_router)
-    dp.include_router(bonus_router)
     await dp.start_polling(bot)
 
 

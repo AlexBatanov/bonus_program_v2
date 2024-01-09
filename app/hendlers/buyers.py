@@ -10,7 +10,7 @@ from utils.validators import is_valid_data_cheque_buyer, is_valid_number
 from utils.states import BuyerForm, ChangeForm, ChequeForm, WarrantyForm
 from utils.crud import create_obj, get_obj, get_obj_relation, update_obj
 from db.async_engine import async_session
-from db.models import Buyer, Cheque
+from db.models import Buyer, Cheque, Employee
 
 
 
@@ -116,10 +116,12 @@ async def start_warranty(callback: CallbackQuery, state: FSMContext):
         'Выбери номер нужного чека\n\n'
     )
     for indx, cheque in enumerate(cheques, start=1):
+        employee = await get_obj(async_session, Employee, 'telegram_id', cheque.employee)
         message += (
             f'№: {indx}\n'
             f'Дата покупки: {cheque.date}\n'
             f'Установленные пленки: {cheque.films}\n'
+            f'Продавец: {employee.first_name} {employee.last_name}\n'
             f'Сумма чека: {cheque.amount}\n\n'
         )
     await callback.message.answer(message, reply_markup=kb.numder_cheques(len(cheques)))

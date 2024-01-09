@@ -20,8 +20,8 @@ class AccesBot(BaseMiddleware):
 
         user_id = data.get('event_from_user').id
         employee = await get_obj(async_session, Employee, 'telegram_id', user_id)
-        if False:
-        # if not employee or employee.is_banned:
+        # if False:
+        if not employee or employee.is_banned:
             await event.answer(
                 'Нет доступа!\n'
                 "Для работы с ботом отправь администратору\n"
@@ -29,7 +29,7 @@ class AccesBot(BaseMiddleware):
                 parse_mode=ParseMode.HTML
             )
             return
-        data['is_admin'] = True #employee.is_admin     
+        data['is_admin'] = employee.is_admin     
         return await handler(event, data)
 
 
@@ -44,8 +44,8 @@ class CheckAdmin(BaseMiddleware):
 
         user_id = data.get('event_from_user').id
         employee = await get_obj(async_session, Employee, 'telegram_id', user_id)
-        if True:
-        # if employee and employee.is_admin:   
+        # if True:
+        if employee and employee.is_admin:   
             return await handler(event, data)
         await event.answer('Нет доступа!\n')
         return
