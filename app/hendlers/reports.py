@@ -7,7 +7,7 @@ from aiogram.fsm.context import FSMContext
 from aiogram.types.input_file import FSInputFile
 
 from utils.preparing_and_writer_data import (
-    get_data_all_buyers, get_data_all_employee, send_data
+    get_data_all_buyers, get_data_all_cheques, get_data_all_employee, get_data_today_cheques, send_data
 )
 from keyboards import kb
 from middlewares.user_acces import CheckAdmin
@@ -37,5 +37,28 @@ async def send_employees_data_file(callback: CallbackQuery, state: FSMContext):
 async def send_buyers_data_file(callback: CallbackQuery, state: FSMContext):
     """Отправляем файл xlsx со всеми сотрудниками"""
     data = await get_data_all_buyers()
+    await send_data(callback, data)
+
+
+@reports_router.callback_query(F.data == 'info_cheques')
+async def report_choise_cheques(callback: CallbackQuery, state: FSMContext):
+    """Отправляем файл xlsx со всеми сотрудниками"""
+    await callback.message.answer(
+        'Варианты отчета', reply_markup=kb.report_cheques()
+    )
+    await callback.answer()
+
+
+@reports_router.callback_query(F.data == 'all_cheques')
+async def send_cheques_data_file(callback: CallbackQuery, state: FSMContext):
+    """Отправляем файл xlsx со всеми сотрудниками"""
+    data = await get_data_all_cheques()
+    await send_data(callback, data)
+
+
+@reports_router.callback_query(F.data == 'cheques_today')
+async def send_cheques_data_file(callback: CallbackQuery, state: FSMContext):
+    """Отправляем файл xlsx со всеми сотрудниками"""
+    data = await get_data_today_cheques()
     await send_data(callback, data)
 

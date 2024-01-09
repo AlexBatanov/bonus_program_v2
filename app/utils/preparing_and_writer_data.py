@@ -1,9 +1,11 @@
+from datetime import datetime as dt
+
 import asyncio
 from typing import List
 
 import openpyxl
 
-from db.models import Buyer, Employee
+from db.models import Buyer, Cheque, Employee
 from utils.crud import get_all_obj
 from db.async_engine import async_session
 from aiogram.types.input_file import FSInputFile
@@ -34,6 +36,50 @@ async def get_data_all_buyers():
             buyer.name,
             buyer.count_aplications,
             sum(cheque.amount for cheque in buyer.cheques),
+        ]
+        result.append(cur_data)
+    return result
+
+
+async def get_data_all_cheques():
+    """Получаем всех покупателей и формируем в лист для дальнейшей записи в файл"""
+    cheques = await get_all_obj(async_session, Cheque)
+    return get_list_cheques(cheques)
+    sum_amount = sum(cheque.amount for cheque in cheques)
+    result = [
+        ['Общая сумма', sum_amount, '-'],
+        ['Установленные пленки', 'Сумма', 'Дата'],
+    ]
+    for cheque in cheques:
+        cur_data = [
+            cheque.films,
+            cheque.amount,
+            cheque.date,
+        ]
+        result.append(cur_data)
+    return result
+
+
+async def get_data_today_cheques():
+    """Получаем всех покупателей и формируем в лист для дальнейшей записи в файл"""
+    cheques = await get_all_obj(async_session, Cheque)
+    dt_now = dt.now().date()
+    cheques_today = [cheque for cheque in cheques if cheque.date.date() == dt_now]
+    return get_list_cheques(cheques_today)
+    
+
+def get_list_cheques(cheques):
+    sum_amount = sum(cheque.amount for cheque in cheques)
+    result = [
+        ['Общая сумма', sum_amount, '-'],
+        ['Установленные пленки', 'Сумма', 'Дата'],
+    ]
+    for cheque in cheques:
+        print(cheque.buyer)
+        cur_data = [
+            cheque.films,
+            cheque.amount,
+            cheque.date,
         ]
         result.append(cur_data)
     return result

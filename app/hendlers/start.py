@@ -31,6 +31,7 @@ async def on_startup():
         print("Бонусы добавлены")
 
 
+@start_router.message(F.text.lower() == 'начать продажу')
 @start_router.message(CommandStart())
 async def start(message: Message, state: FSMContext, is_admin: bool):
     """Начало работы бота"""

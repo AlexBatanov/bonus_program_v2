@@ -111,6 +111,9 @@ def unlock():
 def admin_keys():
     kb = [
         [
+            types.KeyboardButton(text="Начать продажу"),
+        ],
+        [
             types.KeyboardButton(text="Добавить сотрудника"),
             types.KeyboardButton(text="Редактировать сотрудника"),
         ],
@@ -133,6 +136,9 @@ def admin_keys():
 
 def cancel():
     kb = [
+        [
+            types.KeyboardButton(text="Начать продажу"),
+        ],
         [
             types.KeyboardButton(text="Отмена"),
         ],
@@ -187,7 +193,23 @@ def list_reports():
         text="Список клиентов", callback_data="list_buyers"
     )
     builder.button(
-        text="Список чеков", callback_data="list_cheques"
+        text="Инфа по чекам", callback_data="info_cheques"
+    )
+    builder.adjust(1)
+    return builder.as_markup()
+
+
+def report_cheques():
+    builder = InlineKeyboardBuilder()
+
+    builder.button(
+        text="Все чеки", callback_data="all_cheques"
+    )
+    builder.button(
+        text="Чеки за день", callback_data="cheques_today"
+    )
+    builder.button(
+        text="Чеки за период", callback_data="cheques_for"
     )
     builder.adjust(1)
     return builder.as_markup()
