@@ -1,3 +1,5 @@
+import re
+
 from typing import Dict
 from utils.crud import get_obj
 from db.async_engine import async_session
@@ -27,12 +29,12 @@ async def is_valid_data_cheque_buyer(data: Dict) -> str | None:
         return 'Введеные бонусы привышают баллы клиента'
 
 
-def is_valid_tg_id(id: str) -> str | bool:
+def is_valid_tg_id(id: str) -> str | None:
     if not id.isdigit():
         return 'Telegram ID должен содержать только числа'
 
 
-async def is_valid_number(number: str) -> str | bool:
+async def is_valid_number(number: str) -> str | None:
     if not number.isdigit():
         return 'Номер должен содержать только цифры'
     if len(number) != 11:
@@ -40,3 +42,10 @@ async def is_valid_number(number: str) -> str | bool:
     buyer = await get_obj(async_session, Buyer, 'number', number)
     if buyer:
         return 'Данный номер уже зарегистрирован'
+
+
+def chek_correct_data(text: str) -> str | None:
+    pattern = r'^\d{2}\.\d{2}\.\d{4}$'
+    dates = text.split()
+    if not re.match(pattern, dates[0]) or not re.match(pattern, dates[-1]):
+        return 'Введен не верный формат, внимательно посмотри на пример'

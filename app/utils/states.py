@@ -34,3 +34,7 @@ class ChangeForm(StatesGroup):
 
 class BonusForm(StatesGroup):
     percent = State()
+
+
+class DateForm(StatesGroup):
+    date = State()

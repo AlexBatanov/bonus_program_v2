@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import Dict
 
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -35,3 +36,9 @@ async def update_buyer(async_session: AsyncSession, data: Dict) -> Buyer:
     buyer.bonus_points = buyer.bonus_points - int(data.get('bonus_points')) + amount * bonus.percent // 100
     buyer.count_aplications += 1
     return buyer
+
+
+def parse_date_string(date_string: str) -> datetime:
+    format_string = '%d.%m.%Y'
+    date_obj = datetime.strptime(date_string, format_string)
+    return date_obj
