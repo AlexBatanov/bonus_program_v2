@@ -2,11 +2,10 @@ from aiogram import F, Router
 from aiogram.types import Message, CallbackQuery
 from aiogram.filters import CommandStart
 from aiogram.fsm.context import FSMContext
-from aiogram.enums import ParseMode
 
 from middlewares.user_acces import AccesBot
 from keyboards import kb
-from db.models import BonusPoint, Employee, Buyer
+from db.models import BonusPoint, Buyer
 from db.async_engine import async_session
 from utils.crud import get_obj, create_obj
 from utils.states import BuyerForm
