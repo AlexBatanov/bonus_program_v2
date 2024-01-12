@@ -1,8 +1,8 @@
-"""create table
+"""create
 
-Revision ID: f0dc09e3750d
+Revision ID: ad763089784b
 Revises: 
-Create Date: 2024-01-05 16:24:01.079073
+Create Date: 2024-01-12 19:31:34.399566
 
 """
 from typing import Sequence, Union
@@ -12,7 +12,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision: str = 'f0dc09e3750d'
+revision: str = 'ad763089784b'
 down_revision: Union[str, None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
@@ -30,7 +30,7 @@ def upgrade() -> None:
     op.create_table('buyers',
     sa.Column('name', sa.String(length=30), nullable=False),
     sa.Column('number', sa.String(length=11), nullable=False),
-    sa.Column('date_registered', sa.DateTime(timezone=True), server_default=sa.text('(CURRENT_TIMESTAMP)'), nullable=False),
+    sa.Column('date_registered', sa.DateTime(), server_default=sa.text('now()'), nullable=False),
     sa.Column('bonus_points', sa.Integer(), nullable=False),
     sa.Column('count_aplications', sa.Integer(), nullable=False),
     sa.Column('id', sa.Integer(), nullable=False),
@@ -41,7 +41,7 @@ def upgrade() -> None:
     sa.Column('first_name', sa.String(length=30), nullable=False),
     sa.Column('last_name', sa.String(length=30), nullable=False),
     sa.Column('telegram_id', sa.Integer(), nullable=False),
-    sa.Column('date_registered', sa.DateTime(timezone=True), server_default=sa.text('(CURRENT_TIMESTAMP)'), nullable=False),
+    sa.Column('date_registered', sa.DateTime(), server_default=sa.text('now()'), nullable=False),
     sa.Column('is_admin', sa.Boolean(), nullable=False),
     sa.Column('is_banned', sa.Boolean(), nullable=False),
     sa.Column('id', sa.Integer(), nullable=False),
@@ -51,7 +51,7 @@ def upgrade() -> None:
     op.create_table('cheques',
     sa.Column('amount', sa.Integer(), nullable=False),
     sa.Column('films', sa.String(), nullable=False),
-    sa.Column('date', sa.DateTime(timezone=True), server_default=sa.text('(CURRENT_TIMESTAMP)'), nullable=False),
+    sa.Column('date', sa.DateTime(), server_default=sa.text('now()'), nullable=False),
     sa.Column('employee', sa.Integer(), nullable=False),
     sa.Column('buyer', sa.Integer(), nullable=False),
     sa.Column('id', sa.Integer(), nullable=False),

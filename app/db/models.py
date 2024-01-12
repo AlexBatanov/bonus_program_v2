@@ -3,6 +3,7 @@ from typing import List
 from sqlalchemy import DateTime, ForeignKey, String, func
 from sqlalchemy.orm import DeclarativeBase
 from sqlalchemy.orm import Mapped, mapped_column, relationship
+from sqlalchemy.dialects.postgresql import TIMESTAMP
 
 
 class Base(DeclarativeBase):
@@ -18,7 +19,7 @@ class Employee(Base):
     last_name: Mapped[str] = mapped_column(String(30))
     telegram_id: Mapped[int] = mapped_column(unique=True)
     date_registered: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True), server_default=func.now()
+        DateTime(timezone=False), server_default=func.now()
     )
     is_admin: Mapped[bool] = mapped_column(default=False)
     is_banned: Mapped[bool] = mapped_column(default=False)
@@ -33,7 +34,7 @@ class Buyer(Base):
     name: Mapped[str] = mapped_column(String(30))
     number: Mapped[str] = mapped_column(String(11), unique=True)
     date_registered: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True), server_default=func.now()
+        DateTime(timezone=False), server_default=func.now()
     )
     bonus_points: Mapped[int] = mapped_column(default=0)
     count_aplications: Mapped[int] = mapped_column(default=0)
@@ -56,7 +57,7 @@ class Cheque(Base):
     amount: Mapped[int] = mapped_column()
     films: Mapped[str] = mapped_column()
     date: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True), server_default=func.now()
+        DateTime(timezone=False), server_default=func.now()
     )
     employee: Mapped[int] = mapped_column(ForeignKey("employees.telegram_id"))
     buyer: Mapped[int] = mapped_column(ForeignKey("buyers.id"))

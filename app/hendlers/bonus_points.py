@@ -35,5 +35,6 @@ async def set_new_percent(message: Message, state: FSMContext):
     data = await state.get_data()
     bonus = data.get('bonus')
     bonus.percent = percent
+    await state.clear()
     await update_obj(async_session, bonus)
     await message.answer('Проценты изменены')

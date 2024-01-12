@@ -104,7 +104,7 @@ async def select_mode_change_user(message: Message, state: FSMContext):
     if err_message:
         await message.answer(err_message)
         return
-    employee = await get_obj(async_session, Employee, 'telegram_id', message.text)
+    employee = await get_obj(async_session, Employee, 'telegram_id', int(message.text))
     if not employee:
         await message.answer('Сотрудника с таким id нет')
         return

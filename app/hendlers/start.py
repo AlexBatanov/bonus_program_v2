@@ -38,12 +38,12 @@ async def start(message: Message, state: FSMContext, is_admin: bool):
     await state.update_data(is_admin=is_admin)
     if is_admin:
         await message.answer(
-            "Введи номер клиента в формате: 89271112233",
+            "Введи номер клиента в 11 значном формате.\nПример: 89271112233",
             reply_markup=kb.admin_keys()
         )
     else:
         await message.answer(
-            "Введи номер клиента в формате: 89271112233",
+            "Введи номер клиента в 11 значном формате.\nПример: 89271112233",
             reply_markup=kb.cancel()
         )
 
@@ -72,7 +72,7 @@ async def check_buyer(message: Message, state: FSMContext, is_admin: bool):
             reply_markup=kb.sale_buyer(data.get('is_admin'))
         )
     else:
-        await state.update_data(number=int(message.text))
+        await state.update_data(number=message.text)
         await message.answer('Введи имя клиента')
         await state.set_state(BuyerForm.name)
 
@@ -81,5 +81,5 @@ async def check_buyer(message: Message, state: FSMContext, is_admin: bool):
 async def cancel(message: Message, state: FSMContext):
     await state.clear()
     await message.answer(
-        'Отменено. Для продолжения работы нажми /start или введи номер телефона\U0001F446'
+        'Отменено. Для продолжения работы нажми кнопку "Начать продажу"\U0001F446'
     )
