@@ -2,7 +2,7 @@ from datetime import date
 
 from sqlalchemy import select, func
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.orm import selectinload, query
+from sqlalchemy.orm import selectinload
 
 
 async def create_obj(async_session: AsyncSession, obj):
@@ -27,6 +27,17 @@ async def get_all_obj(async_session: AsyncSession, model, attr, param):
 
 async def update_obj(async_session: AsyncSession, obj):
     async with async_session() as session:
+        session.add(obj)
+        await session.commit()
+        await session.refresh(obj)
+
+
+async def added_obj_in_array_and_update(async_session: AsyncSession, obj, data):
+    async with async_session() as session:
+        employee = obj.warranty_employee
+        employee.append('skd')
+        print(employee)
+        obj.warranty_employee = employee
         session.add(obj)
         await session.commit()
         await session.refresh(obj)

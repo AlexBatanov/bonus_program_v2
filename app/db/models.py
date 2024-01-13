@@ -3,6 +3,7 @@ from typing import List
 from sqlalchemy import DateTime, ForeignKey, String, func, ARRAY
 from sqlalchemy.orm import DeclarativeBase
 from sqlalchemy.orm import Mapped, mapped_column, relationship
+from sqlalchemy.ext.mutable import MutableList
 
 
 
@@ -59,7 +60,7 @@ class Cheque(Base):
     date: Mapped[datetime] = mapped_column(
         DateTime(timezone=False), server_default=func.now()
     )
-    warranty_employee: Mapped[List[str]] = mapped_column(ARRAY(String), nullable=True)
+    warranty_employee: Mapped[List[str]] = mapped_column(MutableList.as_mutable(ARRAY(String)), default=[])
     employee: Mapped[int] = mapped_column(ForeignKey("employees.telegram_id"))
     buyer: Mapped[int] = mapped_column(ForeignKey("buyers.id"))
 

@@ -9,7 +9,7 @@ from keyboards import kb
 from utils.update_data import update_buyer, update_data_cheque
 from utils.validators import is_valid_data_cheque_buyer, is_valid_number
 from utils.states import BuyerForm, ChangeForm, ChequeForm, WarrantyForm
-from utils.crud import create_obj, get_obj, get_obj_relation, update_obj
+from utils.crud import added_obj_in_array_and_update, create_obj, get_obj, get_obj_relation, update_obj
 from db.async_engine import async_session
 from db.models import Buyer, Cheque, Employee
 
@@ -133,12 +133,12 @@ async def start_warranty(callback: CallbackQuery, state: FSMContext):
 
     for indx, cheque in enumerate(cheques, start=1):
         employee = await get_obj(async_session, Employee, 'telegram_id', cheque.employee)
-        warranty_employees = []
+        warranty_employees = cheque.warranty_employee
 
-        if len(cheque.warranty_employee) != 0:
-            warranty_employees = await get_obj(
-                async_session, Employee, 'telegram_id', cheque.warranty_employee
-            )
+        # if not cheque.warranty_employee:
+        #     warranty_employees = await get_obj(
+        #         async_session, Employee, 'telegram_id', cheque.warranty_employee
+        #     )
 
         message += (
             f'№: {indx}\n'
@@ -147,7 +147,7 @@ async def start_warranty(callback: CallbackQuery, state: FSMContext):
             f'Продавец: {employee.first_name} {employee.last_name}\n'
             f'Сумма чека: {cheque.amount}\n\n'
         )
-
+        print(warranty_employees)
         if warranty_employees:
             message += (
                 'Было обращаение по гарантии, провел:\n'
@@ -177,12 +177,12 @@ async def input_films_warranty(callback: CallbackQuery, state: FSMContext):
 @buyer_router.message(WarrantyForm.films)
 async def set_films_warranty(message: Message, state: FSMContext):
     """Обновляем пленки в чеке и завершаем диалог с гарантией"""
-    employee = await get_obj(async_session, Employee, 'telegram_id', int(data.get('tg_id')))
     data = await state.get_data()
+    employee = await get_obj(async_session, Employee, 'telegram_id', int(data.get('tg_id')))
     cheque = data.get('cheque')
     cheque.films = message.text
     name = f'{employee.first_name} {employee.last_name}'
-    cheque.warranty_employee.append({name: date.today()})
+    cheque.warranty_employee.append(f'{name}: {date.today().strftime("%d.%m.%Y")}\n')
     await update_obj(async_session, cheque)
     await message.answer('Данные обновлены и проведены')
     await state.clear()

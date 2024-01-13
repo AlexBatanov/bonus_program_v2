@@ -38,12 +38,13 @@ async def on_startup():
 
     if not admin:
         admin = Employee(
-            firs_name='Administrator',
+            first_name='Administrator',
             last_name='Admin',
-            tyelegram_id=tg_id,
+            telegram_id=tg_id,
             is_admin=True,
             is_banned=False
         )
+        await create_obj(async_session, admin)
 
 
 @start_router.message(F.text.lower() == 'начать продажу')
