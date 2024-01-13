@@ -1,9 +1,9 @@
 from datetime import datetime
 from typing import List
-from sqlalchemy import DateTime, ForeignKey, String, func
+from sqlalchemy import DateTime, ForeignKey, String, func, ARRAY
 from sqlalchemy.orm import DeclarativeBase
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-from sqlalchemy.dialects.postgresql import TIMESTAMP
+
 
 
 class Base(DeclarativeBase):
@@ -59,7 +59,10 @@ class Cheque(Base):
     date: Mapped[datetime] = mapped_column(
         DateTime(timezone=False), server_default=func.now()
     )
+    warranty_employee: Mapped[List[str]] = mapped_column(ARRAY(String), nullable=True)
     employee: Mapped[int] = mapped_column(ForeignKey("employees.telegram_id"))
     buyer: Mapped[int] = mapped_column(ForeignKey("buyers.id"))
 
 
+# docker exec -it armor psql -U admin -d postgres -c "drop schema public cascade; create schema public;"
+# psql: error: connection to server on socket "/var/run/postgresql/.s.PGSQL.5432" failed: FATAL:  database "armor" does not exist

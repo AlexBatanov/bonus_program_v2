@@ -22,29 +22,26 @@ async def on_startup():
     """
     Проверяет наличие объекта бонус в бд,
     если нет, то создает.
+    Проверяет наличие адина в бд,
+    если нет, то создает, tg_id из env.
     
     используется при запуске бота
     """
     tg_id = int(os.getenv('TG_ID'))
     admin = await get_obj(async_session, Employee, 'telegram_id', tg_id)
     obj = await get_obj(async_session, BonusPoint, 'name', 'bonus_pointer')
+
     if not obj:
         obj = BonusPoint(name='bonus_pointer')
         await create_obj(async_session, obj)
         print("Бонусы добавлены")
-    if not admin:
-        admin = Employee(
-            first_name='admin',
-            last_name='admin',
-            telegram_id=tg_id,
-            is_admin=True
-        )
 
 
 @start_router.message(F.text.lower() == 'начать продажу')
 @start_router.message(CommandStart())
 async def start(message: Message, state: FSMContext, is_admin: bool):
     """Начало работы бота"""
+
     await state.update_data(is_admin=is_admin)
     if is_admin:
         await message.answer(
@@ -70,6 +67,7 @@ async def check_buyer(message: Message, state: FSMContext, is_admin: bool):
     """
     await state.update_data(is_admin=is_admin)
     await state.update_data(number=message.text)
+    await state.update_data(tg_id=int(message.from_user.id))
     data = await state.get_data()
 
     buyer = await get_obj(async_session, Buyer, 'number', message.text)
