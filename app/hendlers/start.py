@@ -36,6 +36,15 @@ async def on_startup():
         await create_obj(async_session, obj)
         print("Бонусы добавлены")
 
+    if not admin:
+        admin = Employee(
+            firs_name='Administrator',
+            last_name='Admin',
+            tyelegram_id=tg_id,
+            is_admin=True,
+            is_banned=False
+        )
+
 
 @start_router.message(F.text.lower() == 'начать продажу')
 @start_router.message(CommandStart())
