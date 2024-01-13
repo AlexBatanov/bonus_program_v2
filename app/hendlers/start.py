@@ -1,11 +1,13 @@
+import os
+
 from aiogram import F, Router
-from aiogram.types import Message, CallbackQuery
+from aiogram.types import Message
 from aiogram.filters import CommandStart
 from aiogram.fsm.context import FSMContext
 
 from middlewares.user_acces import AccesBot
 from keyboards import kb
-from db.models import BonusPoint, Buyer
+from db.models import BonusPoint, Buyer, Employee
 from db.async_engine import async_session
 from utils.crud import get_obj, create_obj
 from utils.states import BuyerForm
@@ -23,11 +25,20 @@ async def on_startup():
     
     используется при запуске бота
     """
+    tg_id = int(os.getenv('TG_ID'))
+    admin = await get_obj(async_session, Employee, 'telegram_id', tg_id)
     obj = await get_obj(async_session, BonusPoint, 'name', 'bonus_pointer')
     if not obj:
         obj = BonusPoint(name='bonus_pointer')
         await create_obj(async_session, obj)
         print("Бонусы добавлены")
+    if not admin:
+        admin = Employee(
+            first_name='admin',
+            last_name='admin',
+            telegram_id=tg_id,
+            is_admin=True
+        )
 
 
 @start_router.message(F.text.lower() == 'начать продажу')
