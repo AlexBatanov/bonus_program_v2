@@ -22,7 +22,7 @@ if config.config_file_name is not None:
 # for 'autogenerate' support
 # from myapp import mymodel
 # target_metadata = mymodel.Base.metadata
-from os import getenv
+# from os import getenv
 from db.models import Base
 from dotenv import load_dotenv
 

@@ -18,11 +18,11 @@ async def get_obj(async_session: AsyncSession, model, attr, param):
         return db_obj.scalar()
 
 
-async def get_all_obj(async_session: AsyncSession, model, attr, param):
-    async with async_session() as session:
-        db_obj = await session.execute(
-            select(model).filter(getattr(model, attr) == param))
-        return db_obj.scalars()
+# async def get_all_obj(async_session: AsyncSession, model, attr, param):
+#     async with async_session() as session:
+#         db_obj = await session.execute(
+#             select(model).filter(getattr(model, attr) == param))
+#         return db_obj.scalars()
 
 
 async def update_obj(async_session: AsyncSession, obj):

@@ -111,9 +111,10 @@ async def save_saly(callback: CallbackQuery, state: FSMContext):
 async def start_warranty(callback: CallbackQuery, state: FSMContext):
     """Начало диалога обращения по гарантии"""
     data = await state.get_data()
-    buyer = await get_obj_relation(
-        async_session, Buyer, 'number', data.get('number'), 'cheques'
-    )
+    # buyer = await get_obj_relation(
+    #     async_session, Buyer, 'number', data.get('number'), 'cheques'
+    # )
+    buyer = await get_obj(async_session, Buyer, 'number', data.get('number'))
     min_date = datetime.now() - timedelta(days=60)
     cheques = [cheque for cheque in buyer.cheques if cheque.date >= min_date]
     await state.update_data(cheques=cheques)
@@ -135,24 +136,22 @@ async def start_warranty(callback: CallbackQuery, state: FSMContext):
         employee = await get_obj(async_session, Employee, 'telegram_id', cheque.employee)
         warranty_employees = cheque.warranty_employee
 
-        # if not cheque.warranty_employee:
-        #     warranty_employees = await get_obj(
-        #         async_session, Employee, 'telegram_id', cheque.warranty_employee
-        #     )
-
-        message += (
+        cur_message= (
+            '\U0001F4B5\U0001F4B5\U0001F4B5\U0001F4B5\U0001F4B5'
             f'№: {indx}\n'
-            f'Дата покупки: {cheque.date}\n'
+            f'Дата покупки: {cheque.date.strftime("%d.%m.%Y")}\n'
             f'Установленные пленки: {cheque.films}\n'
             f'Продавец: {employee.first_name} {employee.last_name}\n'
             f'Сумма чека: {cheque.amount}\n\n'
         )
         print(warranty_employees)
         if warranty_employees:
-            message += (
+            cur_message += (
                 'Было обращаение по гарантии, провел:\n'
-                f'{"  ".join(warranty_employees)}'
+                f'{"".join(warranty_employees)}\n\n'
             )
+        message += cur_message
+
     await callback.message.answer(message, reply_markup=kb.numder_cheques(len(cheques)))
     await callback.answer()
 
@@ -178,12 +177,7 @@ async def input_films_warranty(callback: CallbackQuery, state: FSMContext):
 async def set_films_warranty(message: Message, state: FSMContext):
     """Обновляем пленки в чеке и завершаем диалог с гарантией"""
     data = await state.get_data()
-    employee = await get_obj(async_session, Employee, 'telegram_id', int(data.get('tg_id')))
-    cheque = data.get('cheque')
-    cheque.films = message.text
-    name = f'{employee.first_name} {employee.last_name}'
-    cheque.warranty_employee.append(f'{name}: {date.today().strftime("%d.%m.%Y")}\n')
-    await update_obj(async_session, cheque)
+    await update_cheque(data, message.text)
     await message.answer('Данные обновлены и проведены')
     await state.clear()
 
@@ -191,15 +185,21 @@ async def set_films_warranty(message: Message, state: FSMContext):
 @buyer_router.callback_query(F.data == 'skip_films')
 async def cancel_warranty(callback: CallbackQuery, state: FSMContext):
     """Чистим состояние и завершаем диалог с гарантией"""
-    employee = await get_obj(async_session, Employee, 'telegram_id', int(data.get('tg_id')))
     data = await state.get_data()
-    cheque = data.get('cheque')
-    name = f'{employee.first_name} {employee.last_name}'
-    cheque.warranty_employee.append({name: date.today()})
-    await update_obj(async_session, cheque)
+    await update_cheque(data)
     await callback.message.answer('Работа с гарантией завершена')
     await callback.answer()
     await state.clear()
+
+
+async def update_cheque(data, films=None):
+    employee = await get_obj(async_session, Employee, 'telegram_id', int(data.get('tg_id')))
+    cheque = data.get('cheque')
+    if films:
+        cheque.films = films
+    name = f'{employee.first_name} {employee.last_name}'
+    cheque.warranty_employee.append(f'{name}: {date.today().strftime("%d.%m.%Y")}\n')
+    await update_obj(async_session, cheque)
 
 
 # Блок изменения данных клиента

@@ -14,7 +14,7 @@ services:
 
    bot:
       build: .
-      # restart: always
+      restart: always
       env_file: .env
       depends_on:
          - postgres
