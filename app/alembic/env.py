@@ -1,3 +1,5 @@
+import os
+
 import asyncio
 from logging.config import fileConfig
 
@@ -25,9 +27,17 @@ from db.models import Base
 from dotenv import load_dotenv
 
 target_metadata = Base.metadata
-print(target_metadata)
 load_dotenv()
-config.set_main_option("sqlalchemy.url", getenv("DB_URL"))
+
+db_user = os.getenv("POSTGRES_USER")
+db_password = os.getenv("POSTGRES_PASSWORD")
+db_name = os.getenv("POSTGRES_DB")
+db_host = "postgres"
+
+SQLALCHEMY_DATABASE_URL = f"postgresql+asyncpg://{db_user}:{db_password}@{db_host}/{db_name}"
+
+
+config.set_main_option("sqlalchemy.url", SQLALCHEMY_DATABASE_URL)
 # other values from the config, defined by the needs of env.py,
 # can be acquired:
 # my_important_option = config.get_main_option("my_important_option")

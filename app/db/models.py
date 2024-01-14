@@ -63,7 +63,3 @@ class Cheque(Base):
     warranty_employee: Mapped[List[str]] = mapped_column(MutableList.as_mutable(ARRAY(String)), default=[])
     employee: Mapped[int] = mapped_column(ForeignKey("employees.telegram_id"))
     buyer: Mapped[int] = mapped_column(ForeignKey("buyers.id"))
-
-
-# docker exec -it armor psql -U admin -d postgres -c "drop schema public cascade; create schema public;"
-# psql: error: connection to server on socket "/var/run/postgresql/.s.PGSQL.5432" failed: FATAL:  database "armor" does not exist
