@@ -20,11 +20,9 @@ TOKEN = getenv("BOT_TOKEN")
 storage = MemoryStorage()
 dp = Dispatcher(storage=storage)
 
-from db.models import BonusPoint
+# from db.models import BonusPoint
 
-bonus = BonusPoint(name='ss')
-
-
+# bonus = BonusPoint(name='ss')
 
 async def main() -> None:
     bot = Bot(TOKEN, parse_mode=ParseMode.HTML)

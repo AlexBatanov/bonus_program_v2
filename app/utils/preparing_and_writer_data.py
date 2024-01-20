@@ -73,7 +73,7 @@ async def get_list_cheques(cheques):
         cur_data = [
             cheque.films,
             cheque.amount,
-            cheque.date,
+            cheque.date.strftime("%d.%m.%Y"),
             buyer.name,
             buyer.number
         ]

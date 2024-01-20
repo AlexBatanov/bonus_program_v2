@@ -3,7 +3,6 @@ from aiogram import BaseMiddleware
 from aiogram.types import TelegramObject
 from aiogram.enums import ParseMode
 
-from keyboards import kb
 from utils.crud import get_obj
 from db.async_engine import async_session
 from db.models import Employee
@@ -25,7 +24,8 @@ class AccesBot(BaseMiddleware):
             await event.answer(
                 'Нет доступа!\n'
                 "Для работы с ботом отправь администратору\n"
-                f"свой id <code><b>{user_id}</b></code>",
+                f"свой id <code><b>{user_id}</b></code>\n"
+                "После добавления перезапусти бота командой /start",
                 parse_mode=ParseMode.HTML
             )
             return

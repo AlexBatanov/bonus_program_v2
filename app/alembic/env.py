@@ -32,9 +32,13 @@ load_dotenv()
 db_user = os.getenv("POSTGRES_USER")
 db_password = os.getenv("POSTGRES_PASSWORD")
 db_name = os.getenv("POSTGRES_DB")
-db_host = "postgres"
+db_host = os.getenv("DB_HOST")
 
 SQLALCHEMY_DATABASE_URL = f"postgresql+asyncpg://{db_user}:{db_password}@{db_host}/{db_name}"
+# SQLALCHEMY_DATABASE_URL = "postgresql+asyncpg://postgres:postgres@localhost/armor"
+
+# SQLALCHEMY_DATABASE_URL = "postgresql+asyncpg://postgres:postgres@db:5432/name"
+
 
 
 config.set_main_option("sqlalchemy.url", SQLALCHEMY_DATABASE_URL)

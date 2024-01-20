@@ -61,10 +61,8 @@ async def input_bonus(message: Message, state: FSMContext):
         )
         await state.set_state(BuyerForm.bonus_points)
     else:
-        # await state.update_data(bonus_points=message.text)
         await chek_data(message, state, points=False)
         
-
 
 @buyer_router.message(BuyerForm.bonus_points)
 async def chek_data(message: Message, state: FSMContext, points=True):
@@ -111,9 +109,6 @@ async def save_saly(callback: CallbackQuery, state: FSMContext):
 async def start_warranty(callback: CallbackQuery, state: FSMContext):
     """Начало диалога обращения по гарантии"""
     data = await state.get_data()
-    # buyer = await get_obj_relation(
-    #     async_session, Buyer, 'number', data.get('number'), 'cheques'
-    # )
     buyer = await get_obj(async_session, Buyer, 'number', data.get('number'))
     min_date = datetime.now() - timedelta(days=60)
     cheques = [cheque for cheque in buyer.cheques if cheque.date >= min_date]
