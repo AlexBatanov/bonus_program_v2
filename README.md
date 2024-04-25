@@ -36,6 +36,7 @@ POSTGRES_USER=user_db
 POSTGRES_PASSWORD=pssword_db
 POSTGRES_DB=postgres_db
 DB_HOST=db
+
 ```
 - запускаем докер
 ```
