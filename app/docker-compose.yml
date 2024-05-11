@@ -15,4 +15,4 @@ services:
          - .env
       depends_on:
          - db
-      command: sh -c "wait-for-postgres.sh && alembic upgrade head && python main.py"
+      command: sh -c "./wait-for-postgres.sh db && alembic upgrade head && python main.py"
