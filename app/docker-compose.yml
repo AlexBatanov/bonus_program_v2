@@ -3,11 +3,9 @@ version: "3.11"
 services:
    db:
       image: postgres:latest
-      # restart: always
+      restart: always
       env_file: 
          - .env
-      # volumes:
-      #    - pgdata:/var/lib/postgresql/data
       ports:
          - 5432:5432
 
@@ -17,9 +15,4 @@ services:
          - .env
       depends_on:
          - db
-      command: sh -c "alembic upgrade head && python main.py"
-
-# volumes:
-#    pgdata:
-#   #  redis-data:
-#    postgres-data:
+      command: sh -c "wait-for-postgres.sh && alembic upgrade head && python main.py"
