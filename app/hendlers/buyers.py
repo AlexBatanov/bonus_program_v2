@@ -29,6 +29,9 @@ async def buyer_name(message: Message, state: FSMContext):
         'Клиент создан \U0001F919\n',
         reply_markup=kb.sale_buyer(data.get('is_admin'))
     )
+    await state.clear()
+    await state.update_data(number=data.get('number'))
+    
 
 
 # Блок проведения продажи

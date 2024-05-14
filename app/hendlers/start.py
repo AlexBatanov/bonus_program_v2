@@ -51,7 +51,7 @@ async def on_startup():
 @start_router.message(CommandStart())
 async def start(message: Message, state: FSMContext, is_admin: bool):
     """Начало работы бота"""
-
+    await state.clear()
     await state.update_data(is_admin=is_admin)
     if is_admin:
         await message.answer(

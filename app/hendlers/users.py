@@ -21,6 +21,7 @@ user_router.message.middleware(CheckAdmin())
 @user_router.message(F.text.lower() == "добавить сотрудника")
 async def input_employee_name(message: types.Message, state: FSMContext):
     """Объявляем состояние и запрашиваем имя и фамилию продавца"""
+    await state.clear()
     await message.answer(
         "Введи имя и фамилию продовца через пробел\n"
         "Пример: Иван Иванов",)
@@ -91,6 +92,7 @@ async def save_employee(callback: types.CallbackQuery, state: FSMContext):
 @user_router.message(F.text.lower() == 'редактировать сотрудника')
 async def start_change_user(message: Message, state: FSMContext):
     """Запрашиваем телеграмм_id сотрудника для редактирования"""
+    await state.clear()
     await state.set_state(ChangeUserForm.tg_id)
     await message.answer(
         "Введи телеграм_id сотрудника, только цифры"

@@ -20,6 +20,7 @@ reports_router.message.middleware(CheckAdmin())
 @reports_router.message(F.text.lower() == 'отчеты')
 async def report_choice(message: Message, state: FSMContext):
     """Выводим кнопки с выбором отчета"""
+    await state.clear()
     await message.answer(
         'Статистика будет отправлена в виде exel документа',
         reply_markup=kb.list_reports()
@@ -85,5 +86,6 @@ async def requesting_data(message: Message, state: FSMContext):
     start, end = parse_date_string(dates[0]), parse_date_string(dates[-1])
     data = await get_cheques_by_date(start, end)
     await send_data(message, data)
+    await state.clear()
 
 
